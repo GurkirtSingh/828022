@@ -1,19 +1,21 @@
 import React from "react";
 import { Box } from "@material-ui/core";
 import { SenderBubble, OtherUserBubble } from "../ActiveChat";
-import moment from "moment";
-import { useSelector } from "react-redux";
+import moment from "moment"
 
 const Messages = (props) => {
-  const { conversationId, otherUser, userId} = props;
-  const allConversations = useSelector((state) => state.conversations)
-  const activeChat = allConversations.find(
-    (convo) => convo.id === conversationId
-    )
+  const { messages, otherUser, userId} = props;
+
+  // sort message by ids
+  const sortedMessages = messages.sort(
+    (first,second) => {
+      return first.id - second.id
+    }
+  );
 
   return (
     <Box>
-      {activeChat.messages.sort().map((message) => {
+      {sortedMessages.map((message) => {
         const time = moment(message.createdAt).format("h:mm");
 
         return message.senderId === userId ? (

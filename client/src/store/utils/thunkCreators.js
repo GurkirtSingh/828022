@@ -97,8 +97,6 @@ export const postMessage = (body) => (dispatch) => {
   try {
     saveMessage(body)
     .then((data) =>{
-      console.log(data)
-      console.log(data.message)
       if (!body.conversationId) {
         dispatch(addConversation(body.recipientId, data.message));
       } else {

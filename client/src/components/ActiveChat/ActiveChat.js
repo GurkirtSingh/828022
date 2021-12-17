@@ -3,7 +3,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Box } from "@material-ui/core";
 import { Input, Header, Messages } from "./index";
 import { connect } from "react-redux";
-import { useSelector } from "react-redux";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -24,16 +23,7 @@ const useStyles = makeStyles(() => ({
 const ActiveChat = (props) => {
   const classes = useStyles();
   const { user } = props;
-
-  // accessing state using useSelector
-  const allConversations = useSelector((state) => state.conversations)
-  const activeConversation = useSelector((state) => state.activeConversation)
-  
-  // filter conversation
-  const conversation = allConversations.find(
-    (convo) => convo.otherUser.username === activeConversation
-  ) || {}
-
+  const conversation = props.conversation || {};
 
   return (
     <Box className={classes.root}>
@@ -47,7 +37,7 @@ const ActiveChat = (props) => {
             <Messages
               messages={conversation.messages}
               otherUser={conversation.otherUser}
-              userId={user.id} 
+              userId={user.id}
             />
             <Input
               otherUser={conversation.otherUser}
@@ -64,6 +54,11 @@ const ActiveChat = (props) => {
 const mapStateToProps = (state) => {
   return {
     user: state.user,
+    conversation:
+      state.conversations &&
+      state.conversations.find(
+        (conversation) => conversation.otherUser.username === state.activeConversation
+      )
   };
 };
 

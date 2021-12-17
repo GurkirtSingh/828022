@@ -1,3 +1,5 @@
+import { sortMessages } from "./storeUtils";
+
 export const addMessageToStore = (state, payload) => {
   const { message, sender } = payload;
   // if sender isn't null, that means the message needs to be put in a brand new convo
@@ -15,7 +17,9 @@ export const addMessageToStore = (state, payload) => {
     if (convo.id === message.conversationId) {
       convo.messages.push(message);
       convo.latestMessageText = message.text;
-      return convo;
+      return {
+        ...convo
+      }
     } else {
       return convo;
     }
@@ -72,9 +76,18 @@ export const addNewConvoToStore = (state, recipientId, message) => {
       convo.id = message.conversationId;
       convo.messages.push(message);
       convo.latestMessageText = message.text;
-      return convo;
+      return {
+        ...convo
+      }
     } else {
       return convo;
     }
   });
 };
+
+export const addConvoToStore = (state, conversations) => {
+    return conversations.map((convo)=>{
+      convo.messages = sortMessages(convo.messages)
+      return convo;
+    })
+}

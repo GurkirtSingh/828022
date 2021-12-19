@@ -17,11 +17,10 @@ export const addMessageToStore = (state, payload) => {
 
   return state.map((convo) => {
     if (convo.id === message.conversationId) {
-      convo.messages.push(message);
-      convo.latestMessageText = message.text;
-      return {
-        ...convo
-      }
+      const convoCopy = { ...convo }
+      convoCopy.messages = [ ...convoCopy.messages, message]
+      convoCopy.latestMessageText = message.text;
+      return convoCopy;
     } else {
       return convo;
     }
@@ -75,12 +74,11 @@ export const addSearchedUsersToStore = (state, users) => {
 export const addNewConvoToStore = (state, recipientId, message) => {
   return state.map((convo) => {
     if (convo.otherUser.id === recipientId) {
-      convo.id = message.conversationId;
-      convo.messages.push(message);
-      convo.latestMessageText = message.text;
-      return {
-        ...convo
-      }
+      const convoCopy = { ...convo }
+      convoCopy.id = message.conversationId;
+      convoCopy.messages = [...convoCopy.messages, message];
+      convoCopy.latestMessageText = message.text;
+      return convoCopy;
     } else {
       return convo;
     }
@@ -89,16 +87,18 @@ export const addNewConvoToStore = (state, recipientId, message) => {
 
 export const addConvoToStore = (state, conversations) => {
     return conversations.map((convo)=>{
-      convo.messages = sortMessages(convo.messages)
-      return convo;
+      const convoCopy = { ...convo }
+      convoCopy.messages = sortMessages([...convoCopy.messages])
+      return convoCopy;
     })
 }
 
 export const markMessagesReadByRecipient = (state, payload) => {
   return state.map((convo) => {
     if( convo.id === payload.conversationId){
-      convo.unreadCount = Zero
-      return { ...convo }
+      const convoCopy = { ...convo }
+      convoCopy.unreadCount = Zero
+      return convoCopy
     } else{
       return convo;
     }

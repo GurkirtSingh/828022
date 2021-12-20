@@ -28,8 +28,12 @@ const useStyles = makeStyles((theme) => ({
 const ChatContent = (props) => {
   const classes = useStyles();
 
-  const { conversation } = props;
+  const { conversation, user } = props;
   const { latestMessageText, otherUser } = conversation;
+
+  const isThereUnseenMessage = () =>{
+    return (conversation.unreadCount > 0 && conversation.latestMessageSenderId !== user.id)
+  }
 
   return (
     <Box className={classes.root}>
@@ -37,7 +41,7 @@ const ChatContent = (props) => {
         <Typography className={classes.username}>
           {otherUser.username}
         </Typography>
-        <Typography className={ conversation.unreadCount > 0 ? classes.previewUnreadText : classes.previewText }>
+        <Typography className={ isThereUnseenMessage() ? classes.previewUnreadText : classes.previewText }>
           {latestMessageText}
         </Typography>
       </Box>

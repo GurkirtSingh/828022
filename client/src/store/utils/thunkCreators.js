@@ -5,7 +5,7 @@ import {
   addConversation,
   setNewMessage,
   setSearchedUsers,
-  updateConvo,
+  setLastSeenMessage,
 } from "../conversations";
 import { gotUser, setFetchingStatus } from "../user";
 
@@ -117,21 +117,19 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
   }
 };
 
-const saveMessagesRead = async (body) => {
+const saveMessagesSeen = async (body) => {
   const { data } = await axios.post("/api/allMessagesRead", body);
   return data;
 }
-const sendMessageRead = (data) => {
-  socket.emit("read-messages", {
-    conversationId: data.conversationId
-  });
+const sendMessageSeen = (data) => {
+  socket.emit("read-messages", data);
 };
-export const markAllMessagesReadOfConvo = (body) => async (dispatch) => {
+export const postMessageSeen = (body) => async (dispatch) => {
   try{
-    const data = await saveMessagesRead(body);
-    if(data.conversationId){
-      dispatch(updateConvo(data.conversationId))
-      sendMessageRead(data)
+    const data = await saveMessagesSeen(body);
+    if(data){
+      dispatch(setLastSeenMessage(data.conversationId, data.lastReadMessageId))
+      sendMessageSeen(data)
     }
   }
   catch (error){

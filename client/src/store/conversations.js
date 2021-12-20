@@ -4,8 +4,8 @@ import {
   addSearchedUsersToStore,
   removeOfflineUserFromStore,
   addMessageToStore,
-  addConvoToStore,
-  markMessagesReadByRecipient,
+  addExistingConvoToStore,
+  setLastSeenMessageToStore,
 } from "./utils/reducerFunctions";
 
 // ACTIONS
@@ -17,7 +17,7 @@ const REMOVE_OFFLINE_USER = "REMOVE_OFFLINE_USER";
 const SET_SEARCHED_USERS = "SET_SEARCHED_USERS";
 const CLEAR_SEARCHED_USERS = "CLEAR_SEARCHED_USERS";
 const ADD_CONVERSATION = "ADD_CONVERSATION";
-const UPDATE_CONVERSATION = "UPDATE_CONVERSATION"
+const SET_LASTSEEN_MESSAGE = "SET_LASTSEEN_MESSAGE"
 
 // ACTION CREATORS
 
@@ -28,7 +28,7 @@ export const gotConversations = (conversations) => {
   };
 };
 
-export const setNewMessage = (message, sender) => {
+export const setNewMessage = (message, sender, lastReadMessageId) => {
   return {
     type: SET_MESSAGE,
     payload: { message, sender: sender || null },
@@ -71,10 +71,10 @@ export const addConversation = (recipientId, newMessage) => {
 };
 
 // set messages are read
-export const updateConvo = (conversationId) => {
+export const setLastSeenMessage = (conversationId, lastReadMessageId) => {
   return{
-    type: UPDATE_CONVERSATION,
-    payload: {conversationId},
+    type: SET_LASTSEEN_MESSAGE,
+    payload: {conversationId, lastReadMessageId},
   }
 }
 
@@ -83,7 +83,7 @@ export const updateConvo = (conversationId) => {
 const reducer = (state = [], action) => {
   switch (action.type) {
     case GET_CONVERSATIONS:
-      return addConvoToStore(state, action.conversations);
+      return addExistingConvoToStore(state, action.conversations);
     case SET_MESSAGE:
       return addMessageToStore(state, action.payload);
     case ADD_ONLINE_USER: {
@@ -102,8 +102,8 @@ const reducer = (state = [], action) => {
         action.payload.recipientId,
         action.payload.newMessage
       );
-    case UPDATE_CONVERSATION:
-      return markMessagesReadByRecipient(state, action.payload);
+    case SET_LASTSEEN_MESSAGE:
+      return setLastSeenMessageToStore(state, action.payload);
     default:
       return state;
   }

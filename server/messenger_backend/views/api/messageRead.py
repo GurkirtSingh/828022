@@ -18,17 +18,26 @@ class MessageRead(APIView):
             user_id = user.id
             body = request.data
             conversation_id = body.get("conversationId")
-
-            conversation = Conversation.objects.filter(id=conversation_id).first()
-            if conversation:
-                messages= Message.objects.filter(conversation=conversation)
-                if messages.last().senderId != user_id:
-                    for message in messages:
-                        message.readByRecipient = True
-                        message.save()
-
-                return JsonResponse({"conversationId" : conversation.id})
-            else:
-                return HttpResponse(status=400, content={"error": "conversation does't exists!!"})
+            lastReadMessageId = self.markAllRead(conversation_id, user_id)
+            return JsonResponse({
+                "conversationId": conversation_id,
+                "lastReadMessageId": lastReadMessageId})
         except Exception as e:
             return HttpResponse(status=500)
+    @staticmethod
+    def markAllRead(convoId, userId):
+        conversation = Conversation.objects.filter(id=convoId).first()
+        if conversation:
+            messages= Message.objects.filter(conversation=conversation)
+            if messages.last().senderId != userId:
+                for message in messages:
+                    message.readByRecipient = True
+                    message.save()
+                # if there is last message sent by this user is also mark as seen
+                # this will tell the other user that message was read
+                lastMessageSent = messages.exclude(senderId=userId).last()
+                if lastMessageSent != None:
+                    return lastMessageSent.id
+                else:
+                # this mean that there is no message was sent by this user before
+                    return 0

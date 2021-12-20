@@ -31,10 +31,9 @@ def new_message(sid, message):
     )
 
 @sio.on("read-messages")
-def read_messages(sid, convirsationId):
+def read_messages(sid, data):
     sio.emit(
-        "read-messages",
-        {"convirsationId": convirsationId},
+        "read-messages", data,
         skip_sid=sid
     )
 

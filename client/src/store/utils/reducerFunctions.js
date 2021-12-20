@@ -10,8 +10,10 @@ export const addMessageToStore = (state, payload) => {
       id: message.conversationId,
       otherUser: sender,
       messages: [message],
+      latestMessageText: message.text,
+      latestMessageSenderId: sender.id,
+      unreadCount: 1
     };
-    newConvo.latestMessageText = message.text;
     return [newConvo, ...state];
   }
 
@@ -20,6 +22,8 @@ export const addMessageToStore = (state, payload) => {
       const convoCopy = { ...convo }
       convoCopy.messages = [ ...convoCopy.messages, message]
       convoCopy.latestMessageText = message.text;
+      convoCopy.latestMessageSenderId = message.senderId
+      convoCopy.unreadCount += 1
       return convoCopy;
     } else {
       return convo;
@@ -78,6 +82,8 @@ export const addNewConvoToStore = (state, recipientId, message) => {
       convoCopy.id = message.conversationId;
       convoCopy.messages = [...convoCopy.messages, message];
       convoCopy.latestMessageText = message.text;
+      convoCopy.latestMessageSenderId = message.senderId
+      convoCopy.unreadCount = 1
       return convoCopy;
     } else {
       return convo;
@@ -85,7 +91,7 @@ export const addNewConvoToStore = (state, recipientId, message) => {
   });
 };
 
-export const addConvoToStore = (state, conversations) => {
+export const addExistingConvoToStore = (state, conversations) => {
     return conversations.map((convo)=>{
       const convoCopy = { ...convo }
       convoCopy.messages = sortMessages([...convoCopy.messages])
@@ -93,10 +99,16 @@ export const addConvoToStore = (state, conversations) => {
     })
 }
 
-export const markMessagesReadByRecipient = (state, payload) => {
+export const setLastSeenMessageToStore = (state, payload) => {
+  
   return state.map((convo) => {
     if( convo.id === payload.conversationId){
       const convoCopy = { ...convo }
+
+      if (convoCopy.otherUser.id !== convoCopy.latestMessageSenderId){
+        // lastReadMessageId is to inform other user that message is read by this user
+        convoCopy.lastReadMessageId = payload.lastReadMessageId     
+      }
       convoCopy.unreadCount = Zero
       return convoCopy
     } else{

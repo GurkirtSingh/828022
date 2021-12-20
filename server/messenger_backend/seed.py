@@ -1,4 +1,3 @@
-from django.db import migrations
 from messenger_backend.models import User, Conversation, Message
 
 
@@ -30,12 +29,12 @@ def seed():
     santiagoConvo.save()
 
     messages = Message(
-        conversation=santiagoConvo, senderId=santiago.id, text="Where are you from?"
+        conversation=santiagoConvo, senderId=santiago.id, text="Where are you from?", readByRecipient=True
     )
     messages.save()
 
     messages = Message(
-        conversation=santiagoConvo, senderId=thomas.id, text="I'm from New York"
+        conversation=santiagoConvo, senderId=thomas.id, text="I'm from New York", readByRecipient=True
     )
     messages.save()
 

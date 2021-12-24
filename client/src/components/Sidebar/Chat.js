@@ -61,7 +61,7 @@ const Chat = (props) => {
         sidebar={true}
       />
       <ChatContent conversation={conversation} user={user} />
-      { isThereUnseenMessages() ? <Chip label={conversation.unreadCount} className={classes.chip} /> : ""}
+      { isThereUnseenMessages() && <Chip label={conversation.unreadCount} className={classes.chip} /> }
       
     </Box>
   );

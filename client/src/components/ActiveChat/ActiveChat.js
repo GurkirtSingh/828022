@@ -1,8 +1,10 @@
-import React from "react";
+import {React, useEffect} from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Box } from "@material-ui/core";
 import { Input, Header, Messages } from "./index";
 import { connect } from "react-redux";
+import { postMessageSeen, sendResetUnreadCount } from "../../store/utils/thunkCreators";
+import { resetUnreadCount } from "../../store/conversations";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -24,6 +26,28 @@ const ActiveChat = (props) => {
   const classes = useStyles();
   const { user } = props;
   const conversation = props.conversation || {};
+
+  const isThereUnseenMessages = () => {
+    return (user.id !== conversation.latestMessageSenderId && 
+      conversation.unreadCount > 0)
+  }
+
+  useEffect(() => {
+    async function messageIsRead(){
+      // if this user did not sent last message 
+      // and there are unread message in conversation
+      if (isThereUnseenMessages()) {
+        // mark message read by recepient
+        const reqBody = {
+          "conversationId" : conversation.id
+        };
+      await props.postMessageSeen(reqBody);
+      await props.resetUnreadCount(reqBody.conversationId)
+      sendResetUnreadCount(reqBody.conversationId)
+      }
+    }
+    messageIsRead()
+  })
 
   return (
     <Box className={classes.root}>
@@ -63,4 +87,14 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, null)(ActiveChat);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    postMessageSeen: (message) => {
+      dispatch(postMessageSeen(message));
+    },
+    resetUnreadCount: (conversationId) => {
+      dispatch(resetUnreadCount(conversationId))
+    }
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(ActiveChat);

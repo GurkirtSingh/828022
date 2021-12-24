@@ -3,7 +3,6 @@ import { Box, Chip } from "@material-ui/core";
 import { BadgeAvatar, ChatContent } from "../Sidebar";
 import { makeStyles } from "@material-ui/core/styles";
 import { setActiveChat } from "../../store/activeConversation";
-import { postMessageSeen } from "../../store/utils/thunkCreators";
 import { connect } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
@@ -38,20 +37,11 @@ const Chat = (props) => {
     return (user.id !== conversation.latestMessageSenderId && 
       conversation.unreadCount > 0)
   }
-
+  
   const handleClick = async (conversation) => {
     await props.setActiveChat(conversation.otherUser.username);
-    // if this user did not sent last message 
-    // and there are unread message in conversation
-    if (isThereUnseenMessages()) {
-        // mark message read by recepient
-        const reqBody = {
-          "conversationId" : conversation.id
-        };
-       await props.postMessageSeen(reqBody);
-    }
   };
-
+  
   return (
     <Box onClick={() => handleClick(conversation)} className={classes.root}>
       <BadgeAvatar
@@ -77,9 +67,6 @@ const mapDispatchToProps = (dispatch) => {
   return {
     setActiveChat: (id) => {
       dispatch(setActiveChat(id));
-    },
-    postMessageSeen: (message) => {
-      dispatch(postMessageSeen(message));
     },
   };
 };

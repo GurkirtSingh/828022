@@ -90,6 +90,11 @@ const sendMessage = (data, body) => {
     recipientId: body.recipientId,
     sender: data.sender,
   });
+  // on new-message aslo set last message seen
+  socket.emit("read-messages", {
+    "conversationId": body.conversationId, 
+    "lastReadMessageId": data.lastReadMessageId
+  })
 };
 
 // message format to send: {recipientId, text, conversationId}
@@ -118,7 +123,7 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
 };
 
 const saveMessagesSeen = async (body) => {
-  const { data } = await axios.post("/api/allMessagesRead", body);
+  const { data } = await axios.patch("/api/messageSeen", body);
   return data;
 }
 const sendMessageSeen = (data) => {
@@ -136,3 +141,6 @@ export const postMessageSeen = (body) => async (dispatch) => {
     console.error(error)
   }
 };
+export const sendResetUnreadCount = (conversationId) => {
+  socket.emit("reset-unread-count", conversationId);
+}

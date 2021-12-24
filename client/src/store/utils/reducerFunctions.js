@@ -1,7 +1,5 @@
 import { sortMessages } from "./storeUtils";
 
-const Zero = 0
-
 export const addMessageToStore = (state, payload) => {
   const { message, sender } = payload;
   // if sender isn't null, that means the message needs to be put in a brand new convo
@@ -107,9 +105,20 @@ export const setLastSeenMessageToStore = (state, payload) => {
 
       if (convoCopy.otherUser.id !== convoCopy.latestMessageSenderId){
         // lastReadMessageId is to inform other user that message is read by this user
-        convoCopy.lastReadMessageId = payload.lastReadMessageId     
+        convoCopy.lastReadMessageId = payload.lastReadMessageId
       }
-      convoCopy.unreadCount = Zero
+      return convoCopy
+    } else{
+      return convo;
+    }
+  })
+}
+
+export const resetUnreadCountToStore = (state, conversationId) =>{
+  return state.map((convo) => {
+    if( convo.id === conversationId){
+      const convoCopy = { ...convo }
+      convoCopy.unreadCount = 0
       return convoCopy
     } else{
       return convo;

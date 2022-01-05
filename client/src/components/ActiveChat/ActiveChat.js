@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Box } from "@material-ui/core";
 import { Input, Header, Messages } from "./index";
 import { connect } from "react-redux";
-import { postMessageSeen, sendResetUnreadCount } from "../../store/utils/thunkCreators";
+import { postMessageRead, sendResetUnreadCount } from "../../store/utils/thunkCreators";
 import { resetUnreadCount } from "../../store/conversations";
 
 const useStyles = makeStyles(() => ({
@@ -41,7 +41,7 @@ const ActiveChat = (props) => {
         const reqBody = {
           "conversationId" : conversation.id
         };
-      await props.postMessageSeen(reqBody);
+      await props.postMessageRead(reqBody);
       await props.resetUnreadCount(reqBody.conversationId)
       sendResetUnreadCount(reqBody.conversationId)
       }
@@ -89,8 +89,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    postMessageSeen: (message) => {
-      dispatch(postMessageSeen(message));
+    postMessageRead: (message) => {
+      dispatch(postMessageRead(message));
     },
     resetUnreadCount: (conversationId) => {
       dispatch(resetUnreadCount(conversationId))

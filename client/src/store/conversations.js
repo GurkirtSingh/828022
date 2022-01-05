@@ -5,7 +5,7 @@ import {
   removeOfflineUserFromStore,
   addMessageToStore,
   addExistingConvoToStore,
-  setLastSeenMessageToStore,
+  setLastReadMessageToStore,
   resetUnreadCountToStore,
 } from "./utils/reducerFunctions";
 
@@ -18,7 +18,7 @@ const REMOVE_OFFLINE_USER = "REMOVE_OFFLINE_USER";
 const SET_SEARCHED_USERS = "SET_SEARCHED_USERS";
 const CLEAR_SEARCHED_USERS = "CLEAR_SEARCHED_USERS";
 const ADD_CONVERSATION = "ADD_CONVERSATION";
-const SET_LASTSEEN_MESSAGE = "SET_LASTSEEN_MESSAGE"
+const SET_LASTREAD_MESSAGE = "SET_LASTSEEN_MESSAGE"
 const RESET_UNREAD_COUNT = "RESET_UNREAD_COUNT"
 
 // ACTION CREATORS
@@ -73,9 +73,9 @@ export const addConversation = (recipientId, newMessage) => {
 };
 
 // set messages are read
-export const setLastSeenMessage = (conversationId, lastReadMessageId) => {
+export const setLastReadMessage = (conversationId, lastReadMessageId) => {
   return{
-    type: SET_LASTSEEN_MESSAGE,
+    type: SET_LASTREAD_MESSAGE,
     payload: {conversationId, lastReadMessageId},
   }
 }
@@ -112,8 +112,8 @@ const reducer = (state = [], action) => {
         action.payload.recipientId,
         action.payload.newMessage
       );
-    case SET_LASTSEEN_MESSAGE:
-      return setLastSeenMessageToStore(state, action.payload);
+    case SET_LASTREAD_MESSAGE:
+      return setLastReadMessageToStore(state, action.payload);
     case RESET_UNREAD_COUNT:
       return resetUnreadCountToStore(state, action.conversationId)
     default:

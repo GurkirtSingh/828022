@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Chip } from "@material-ui/core";
+import { Box, Badge } from "@material-ui/core";
 import { BadgeAvatar, ChatContent } from "../Sidebar";
 import { makeStyles } from "@material-ui/core/styles";
 import { setActiveChat } from "../../store/activeConversation";
@@ -17,14 +17,8 @@ const useStyles = makeStyles((theme) => ({
       cursor: "grab"
     }
   },
-  chip: {
-    height: 20,
-    backgroundColor: "#3F92FF",
-    color: "#FFFFFF",
-    fontSize: 10,
-    fontWeight: "bold",
-    letterSpacing: -0.5,
-    lineHeight: 14,
+  badge: {
+    right: 20,
   }
 }));
 
@@ -51,8 +45,7 @@ const Chat = (props) => {
         sidebar={true}
       />
       <ChatContent conversation={conversation} user={user} />
-      { isThereUnseenMessages() && <Chip label={conversation.unreadCount} className={classes.chip} /> }
-      
+      { isThereUnseenMessages() && <Badge badgeContent={conversation.unreadCount} color="primary" className={classes.badge}/>}
     </Box>
   );
 };

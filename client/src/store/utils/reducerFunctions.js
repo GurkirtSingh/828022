@@ -97,7 +97,7 @@ export const addExistingConvoToStore = (state, conversations) => {
     })
 }
 
-export const setLastSeenMessageToStore = (state, payload) => {
+export const setLastReadMessageToStore = (state, payload) => {
   
   return state.map((convo) => {
     if( convo.id === payload.conversationId){

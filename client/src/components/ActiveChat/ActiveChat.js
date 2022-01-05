@@ -1,8 +1,10 @@
-import React from "react";
+import {React, useEffect} from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Box } from "@material-ui/core";
 import { Input, Header, Messages } from "./index";
 import { connect } from "react-redux";
+import { postMessageRead, sendResetUnreadCount } from "../../store/utils/thunkCreators";
+import { resetUnreadCount } from "../../store/conversations";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -25,6 +27,28 @@ const ActiveChat = (props) => {
   const { user } = props;
   const conversation = props.conversation || {};
 
+  const isThereUnseenMessages = () => {
+    return (user.id !== conversation.latestMessageSenderId && 
+      conversation.unreadCount > 0)
+  }
+
+  useEffect(() => {
+    async function messageIsRead(){
+      // if this user did not sent last message 
+      // and there are unread message in conversation
+      if (isThereUnseenMessages()) {
+        // mark message read by recepient
+        const reqBody = {
+          "conversationId" : conversation.id
+        };
+      await props.postMessageRead(reqBody);
+      await props.resetUnreadCount(reqBody.conversationId)
+      sendResetUnreadCount(reqBody.conversationId)
+      }
+    }
+    messageIsRead()
+  })
+
   return (
     <Box className={classes.root}>
       {conversation.otherUser && (
@@ -38,6 +62,7 @@ const ActiveChat = (props) => {
               messages={conversation.messages}
               otherUser={conversation.otherUser}
               userId={user.id}
+              lastSeenId={conversation.lastReadMessageId}
             />
             <Input
               otherUser={conversation.otherUser}
@@ -62,4 +87,14 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, null)(ActiveChat);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    postMessageRead: (message) => {
+      dispatch(postMessageRead(message));
+    },
+    resetUnreadCount: (conversationId) => {
+      dispatch(resetUnreadCount(conversationId))
+    }
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(ActiveChat);

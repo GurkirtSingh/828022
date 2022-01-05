@@ -30,6 +30,19 @@ def new_message(sid, message):
         skip_sid=sid,
     )
 
+@sio.on("read-messages")
+def read_messages(sid, data):
+    sio.emit(
+        "read-messages", data,
+        skip_sid=sid
+    )
+
+@sio.on("reset-unread-count")
+def read_messages(sid, conversationId):
+    sio.emit(
+        "reset-unread-count", conversationId,
+        skip_sid=sid
+    )
 
 @sio.on("logout")
 def logout(sid, user_id):

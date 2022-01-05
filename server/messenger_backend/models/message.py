@@ -16,3 +16,6 @@ class Message(utils.CustomModel):
     )
     createdAt = models.DateTimeField(auto_now_add=True, db_index=True)
     updatedAt = models.DateTimeField(auto_now=True)
+
+    # to track status of message if read or unread
+    readByRecipient = models.BooleanField(default=False)

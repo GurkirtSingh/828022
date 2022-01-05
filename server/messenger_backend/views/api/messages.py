@@ -3,6 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from messenger_backend.models import Conversation, Message
 from online_users import online_users
 from rest_framework.views import APIView
+from messenger_backend.views import api
 
 
 class Messages(APIView):
@@ -21,9 +22,13 @@ class Messages(APIView):
             text = body.get("text")
             recipient_id = body.get("recipientId")
             sender = body.get("sender")
+            lastReadMessageId = 0
 
             # if we already know conversation id, we can save time and just add it to message and return
             if conversation_id:
+                # clear any unseen messages in conversation by this user
+                lastReadMessageId = api.MessageRead.markAllRead(conversation_id, sender_id)
+
                 conversation = Conversation.objects.filter(id=conversation_id).first()
                 message = Message(
                     senderId=sender_id, text=text, conversation=conversation
@@ -45,6 +50,6 @@ class Messages(APIView):
             message = Message(senderId=sender_id, text=text, conversation=conversation)
             message.save()
             message_json = message.to_dict()
-            return JsonResponse({"message": message_json, "sender": sender})
+            return JsonResponse({"message": message_json, "sender": sender, "lastReadMessageId": lastReadMessageId})
         except Exception as e:
             return HttpResponse(status=500)

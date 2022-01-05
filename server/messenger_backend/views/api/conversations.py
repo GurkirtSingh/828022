@@ -45,6 +45,19 @@ class Conversations(APIView):
                 # set properties for notification count and latest message preview
                 convo_dict["latestMessageText"] = convo_dict["messages"][0]["text"]
 
+                # set property for last message sent by and total number of unread messages
+                convo_dict["latestMessageSenderId"] = convo_dict["messages"][0]["senderId"]
+
+                convo_dict["unreadCount"] =  Message.objects.filter(conversation=convo, readByRecipient=False).count()
+
+                # set property for last seen message id
+                lastMessageRead = Message.objects.filter(conversation=convo, senderId=user_id, readByRecipient=True).last()
+                if lastMessageRead:
+                    convo_dict["lastReadMessageId"] = lastMessageRead.id
+                else:   
+                    # if in a conversation there is no message read by recipient
+                    convo_dict["lastReadMessageId"] = 0
+
                 # set a property "otherUser" so that frontend will have easier access
                 user_fields = ["id", "username", "photoUrl"]
                 if convo.user1 and convo.user1.id != user_id:
